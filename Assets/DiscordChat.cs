@@ -128,7 +128,7 @@ namespace DiscordUnityChatDisplay
         public string id;
         public string commandName;
         public string customId;
-        //public DiscordMember member; 
+        public DiscordMember member; 
     }
 
     [System.Serializable]
