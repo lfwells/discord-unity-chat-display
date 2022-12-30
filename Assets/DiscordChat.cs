@@ -30,6 +30,8 @@ namespace DiscordUnityChatDisplay
         WebSocket ws;
         private void Start()
         {
+            Application.runInBackground = true;
+
             ws = new WebSocket("ws://localhost:3000/chat/"+channelID);
             ws.OnOpen += (sender,e) =>
             {
