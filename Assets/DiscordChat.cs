@@ -13,19 +13,19 @@ namespace DiscordUnityChatDisplay
         public string channelID;
 
         public UnityEvent<ChannelUpdateEvent> onChannelUpdate;
-        Queue<ChannelUpdateEvent> channelUpdateQueue = new Queue<ChannelUpdateEvent>(3);
+        Queue<string> channelUpdateQueue = new Queue<string>(3);
         public UnityEvent<MessageCreateEvent> onMessageCreate;
-        Queue<MessageCreateEvent> messageCreateQueue = new Queue<MessageCreateEvent>(3);
+        Queue<string> messageCreateQueue = new Queue<string>(3);
         public UnityEvent<MessageEditEvent> onMessageEdit;
-        Queue<MessageEditEvent> messageEditQueue = new Queue<MessageEditEvent>(3);
+        Queue<string> messageEditQueue = new Queue<string>(3);
         public UnityEvent<MessageDeleteEvent> onMessageDelete;
-        Queue<MessageDeleteEvent> messageDeleteQueue = new Queue<MessageDeleteEvent>(3);
+        Queue<string> messageDeleteQueue = new Queue<string>(3);
         public UnityEvent<ReactionAddEvent> onReactionAdd;
-        Queue<ReactionAddEvent> reactionAddQueue = new Queue<ReactionAddEvent>(3);
+        Queue<string> reactionAddQueue = new Queue<string>(3);
         public UnityEvent<ReactionRemoveEvent> onReactionRemove;
-        Queue<ReactionRemoveEvent> reactionRemoveQueue = new Queue<ReactionRemoveEvent>(3);
+        Queue<string> reactionRemoveQueue = new Queue<string>(3);
         public UnityEvent<InteractionCreateEvent> onInteractionCreate;
-        Queue<InteractionCreateEvent> interactionCreateQueue = new Queue<InteractionCreateEvent>(3);
+        Queue<string> interactionCreateQueue = new Queue<string>(3);
 
         WebSocket ws;
         private void Start()
@@ -49,13 +49,13 @@ namespace DiscordUnityChatDisplay
                 return;
             }
 
-            while (channelUpdateQueue.Count > 0) onChannelUpdate.Invoke(channelUpdateQueue.Dequeue());
-            while (messageCreateQueue.Count > 0) onMessageCreate.Invoke(messageCreateQueue.Dequeue());
-            while (messageEditQueue.Count > 0) onMessageEdit.Invoke(messageEditQueue.Dequeue());
-            while (messageDeleteQueue.Count > 0) onMessageDelete.Invoke(messageDeleteQueue.Dequeue());
-            while (reactionAddQueue.Count > 0) onReactionAdd.Invoke(reactionAddQueue.Dequeue());
-            while (reactionRemoveQueue.Count > 0) onReactionRemove.Invoke(reactionRemoveQueue.Dequeue());
-            while (interactionCreateQueue.Count > 0) onInteractionCreate.Invoke(interactionCreateQueue.Dequeue());
+            while (channelUpdateQueue.Count > 0) onChannelUpdate.Invoke(JsonUtility.FromJson<ChannelUpdateEvent>(channelUpdateQueue.Dequeue()));
+            while (messageCreateQueue.Count > 0) onMessageCreate.Invoke(JsonUtility.FromJson<MessageCreateEvent>(messageCreateQueue.Dequeue()));
+            while (messageEditQueue.Count > 0) onMessageEdit.Invoke(JsonUtility.FromJson<MessageEditEvent>(messageEditQueue.Dequeue()));
+            while (messageDeleteQueue.Count > 0) onMessageDelete.Invoke(JsonUtility.FromJson<MessageDeleteEvent>(messageDeleteQueue.Dequeue()));
+            while (reactionAddQueue.Count > 0) onReactionAdd.Invoke(JsonUtility.FromJson<ReactionAddEvent>(reactionAddQueue.Dequeue()));
+            while (reactionRemoveQueue.Count > 0) onReactionRemove.Invoke(JsonUtility.FromJson<ReactionRemoveEvent>(reactionRemoveQueue.Dequeue()));
+            while (interactionCreateQueue.Count > 0) onInteractionCreate.Invoke(JsonUtility.FromJson<InteractionCreateEvent>(interactionCreateQueue.Dequeue()));
         }
         private void OnMessage(object sender, MessageEventArgs e)
         {
@@ -63,7 +63,7 @@ namespace DiscordUnityChatDisplay
 
             //const { origin, data, content } = JSON.parse(event.data);
             string origin = json["origin"];
-            JSONNode data = json["data"];
+            string data = json["data"].ToString();
             string content = json["content"];
             switch(origin) {
                 case "system":
@@ -79,33 +79,31 @@ namespace DiscordUnityChatDisplay
                     break;
 
                 case "discord":
-                    Debug.Log("[DISCORD] "+content+" "+data);
+                    Debug.Log("[DISCORD] "+content+" "+data+" json:"+json);
                     switch(content) {
                         default:
-                            Debug.LogWarning("unkown discord mode "+content+" "+data);
+                            Debug.LogWarning("unknown discord mode "+content+" "+data);
                             break;
                         case "channel.update":
-                            channelUpdateQueue.Enqueue(new ChannelUpdateEvent {
-                                name = data["name"]
-                            });
+                            channelUpdateQueue.Enqueue(data);
                             break;
                         case "message.create":
-                            messageCreateQueue.Enqueue(new MessageCreateEvent());
+                            messageCreateQueue.Enqueue(data);
                             break;
                         case "message.edit":
-                            messageEditQueue.Enqueue(new MessageEditEvent());
+                            messageEditQueue.Enqueue(data);
                             break;
                         case "message.delete":
-                            messageDeleteQueue.Enqueue(new MessageDeleteEvent());
+                            messageDeleteQueue.Enqueue(data);
                             break;
                         case "reaction.add":
-                            reactionAddQueue.Enqueue(new ReactionAddEvent());
+                            reactionAddQueue.Enqueue(data);
                             break;
                         case "reaction.remove":
-                            reactionRemoveQueue.Enqueue(new ReactionRemoveEvent());
+                            reactionRemoveQueue.Enqueue(data);
                             break;
                         case "interaction.create":
-                            interactionCreateQueue.Enqueue(new InteractionCreateEvent());
+                            interactionCreateQueue.Enqueue(data);
                             break;
                     }
                     break;
@@ -126,5 +124,19 @@ namespace DiscordUnityChatDisplay
     [System.Serializable] public class MessageDeleteEvent {}
     [System.Serializable] public class ReactionAddEvent {}
     [System.Serializable] public class ReactionRemoveEvent {}
-    [System.Serializable] public class InteractionCreateEvent {}
+    [System.Serializable] public class InteractionCreateEvent {
+        public string id;
+        public string commandName;
+        public string customId;
+        //public DiscordMember member; 
+    }
+
+    [System.Serializable]
+    public class DiscordMember
+    {
+        public string id;
+        public string name;
+        public string color;
+        public string avatar;
+    }
 }

@@ -8,4 +8,9 @@ public class SampleResponder : MonoBehaviour
     {
         Debug.Log("got channel "+evt.name);
     }
+    public void OnInteractionCreate(DiscordUnityChatDisplay.InteractionCreateEvent evt)
+    {
+        Debug.Log(evt.customId);
+        //Debug.Log(evt.member.name);
+    }
 }
