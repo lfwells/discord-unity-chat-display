@@ -135,6 +135,7 @@ namespace DiscordUnityChatDisplay
         public string customId;
         public DiscordMember member; 
         public string originalInteractionId;
+        public InteractionOption[] options;
     }
 
     [System.Serializable]
@@ -144,5 +145,13 @@ namespace DiscordUnityChatDisplay
         public string name;
         public string color;
         public string avatar;
+    }
+
+    [System.Serializable]
+    public class InteractionOption
+    {
+        public string name;
+        public string type;
+        public string value;
     }
 }
