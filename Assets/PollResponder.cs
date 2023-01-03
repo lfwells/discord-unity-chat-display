@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DiscordUnityChatDisplay;
+using System.Linq;
 
 //current limitations: only the most recent poll will appear, all votes for previous polls will be ignored
 //doesn't really handle all the different variations of poll modes
@@ -67,9 +68,19 @@ public class PollResponder : MonoBehaviour
             //get the option index (hopefully valid)
             int answerIndex;
             if (!int.TryParse(evt.customId.Replace(POLL_OPTION_PREFIX, ""), out answerIndex)) return;
+            if (answerIndex < 0 || answerIndex >= currentPoll.votes.Count) return;
 
             //THEN we can update the poll results
-            Debug.Log("got a vote "+evt.member.id+" on "+answerIndex);
+            Debug.Log("got a vote action "+evt.member.id+" on "+answerIndex);
+            if (currentPoll.votes[answerIndex].RemoveAll(m => m.id == evt.member.id) > 0)
+            {
+                Debug.Log("already voted, must be unvote");
+            }
+            else
+            {
+                currentPoll.votes[answerIndex].Add(evt.member);
+            }
+            Debug.Log("vote count for this one: "+currentPoll.votes[answerIndex].Count);
             
             //TODO: do something in unity for this (via subclass I guess, wait no, lets try composition! so use events i guess)
         }
