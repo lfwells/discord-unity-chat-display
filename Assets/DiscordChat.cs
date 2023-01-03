@@ -13,23 +13,17 @@ namespace DiscordUnityChatDisplay
         public string channelID;
 
         public UnityEvent<ChannelUpdateEvent> onChannelUpdate;
-        Queue<string> channelUpdateQueue = new Queue<string>(3);
         public UnityEvent<MessageCreateEvent> onMessageCreate;
-        Queue<string> messageCreateQueue = new Queue<string>(3);
         public UnityEvent<MessageEditEvent> onMessageEdit;
-        Queue<string> messageEditQueue = new Queue<string>(3);
         public UnityEvent<MessageDeleteEvent> onMessageDelete;
-        Queue<string> messageDeleteQueue = new Queue<string>(3);
         public UnityEvent<ReactionAddEvent> onReactionAdd;
-        Queue<string> reactionAddQueue = new Queue<string>(3);
         public UnityEvent<ReactionRemoveEvent> onReactionRemove;
-        Queue<string> reactionRemoveQueue = new Queue<string>(3);
         public UnityEvent<InteractionCreateEvent> onInteractionCreate;
-        Queue<string> interactionCreateQueue = new Queue<string>(3);
 
         WebSocket ws;
         private void Start()
         {
+            Debug.Log("???");
             Application.runInBackground = true;
 
             ws = new WebSocket("ws://localhost:3000/chat/"+channelID);
@@ -41,9 +35,25 @@ namespace DiscordUnityChatDisplay
             {
                 Debug.LogError("Error " + e.Message+" "+e.Exception);
             };
-            ws.OnMessage += OnMessage;
+            ws.OnMessage += OnThreadedMessage;
             ws.Connect();
         }
+        object l_frames = new object();
+        Queue<string> _frames = new Queue<string>();
+        int _framesLastProcessed = -1;
+        private void OnThreadedMessage(object sender, MessageEventArgs e)
+        {
+            lock (l_frames) _frames.Enqueue(e.Data);
+        }
+        private void DequeueMessages()
+        {
+            lock (l_frames)
+            {
+                _framesLastProcessed = _frames.Count;
+                while (_frames.Count > 0) ProcessMessage(_frames.Dequeue());
+            }
+        }
+        
         private void Update()
         {
             if(ws == null)
@@ -51,19 +61,13 @@ namespace DiscordUnityChatDisplay
                 return;
             }
 
-            while (channelUpdateQueue.Count > 0) onChannelUpdate.Invoke(JsonUtility.FromJson<ChannelUpdateEvent>(channelUpdateQueue.Dequeue()));
-            while (messageCreateQueue.Count > 0) onMessageCreate.Invoke(JsonUtility.FromJson<MessageCreateEvent>(messageCreateQueue.Dequeue()));
-            while (messageEditQueue.Count > 0) onMessageEdit.Invoke(JsonUtility.FromJson<MessageEditEvent>(messageEditQueue.Dequeue()));
-            while (messageDeleteQueue.Count > 0) onMessageDelete.Invoke(JsonUtility.FromJson<MessageDeleteEvent>(messageDeleteQueue.Dequeue()));
-            while (reactionAddQueue.Count > 0) onReactionAdd.Invoke(JsonUtility.FromJson<ReactionAddEvent>(reactionAddQueue.Dequeue()));
-            while (reactionRemoveQueue.Count > 0) onReactionRemove.Invoke(JsonUtility.FromJson<ReactionRemoveEvent>(reactionRemoveQueue.Dequeue()));
-            while (interactionCreateQueue.Count > 0) onInteractionCreate.Invoke(JsonUtility.FromJson<InteractionCreateEvent>(interactionCreateQueue.Dequeue()));
+            DequeueMessages();
         }
-        private void OnMessage(object sender, MessageEventArgs e)
-        {
-            var json = JSON.Parse(e.Data);
 
-            //const { origin, data, content } = JSON.parse(event.data);
+        private void ProcessMessage(string message)
+        {
+            var json = JSON.Parse(message);
+
             string origin = json["origin"];
             string data = json["data"].ToString();
             string content = json["content"];
@@ -76,7 +80,6 @@ namespace DiscordUnityChatDisplay
                     int time = 0;
                     int.TryParse(data, out time);
                     int latency = (System.DateTime.Now.Millisecond - time);
-                    //if (LOG_PING_PONG) console.log(Date.now(), 'PONG 🏓', latency + "ms");
                     ws.Send("{origin: 'client', data: null, content: '🏓 PONG!'})");
                     break;
 
@@ -87,25 +90,25 @@ namespace DiscordUnityChatDisplay
                             Debug.LogWarning("unknown discord mode "+content+" "+data);
                             break;
                         case "channel.update":
-                            channelUpdateQueue.Enqueue(data);
+                            onChannelUpdate.Invoke(JsonUtility.FromJson<ChannelUpdateEvent>(data));
                             break;
                         case "message.create":
-                            messageCreateQueue.Enqueue(data);
+                            onMessageCreate.Invoke(JsonUtility.FromJson<MessageCreateEvent>(data));
                             break;
                         case "message.edit":
-                            messageEditQueue.Enqueue(data);
+                            onMessageEdit.Invoke(JsonUtility.FromJson<MessageEditEvent>(data));
                             break;
                         case "message.delete":
-                            messageDeleteQueue.Enqueue(data);
+                            onMessageDelete.Invoke(JsonUtility.FromJson<MessageDeleteEvent>(data));
                             break;
                         case "reaction.add":
-                            reactionAddQueue.Enqueue(data);
+                            onReactionAdd.Invoke(JsonUtility.FromJson<ReactionAddEvent>(data));
                             break;
                         case "reaction.remove":
-                            reactionRemoveQueue.Enqueue(data);
+                            onReactionRemove.Invoke(JsonUtility.FromJson<ReactionRemoveEvent>(data));
                             break;
                         case "interaction.create":
-                            interactionCreateQueue.Enqueue(data);
+                            onInteractionCreate.Invoke(JsonUtility.FromJson<InteractionCreateEvent>(data));
                             break;
                     }
                     break;
