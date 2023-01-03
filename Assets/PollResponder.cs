@@ -24,8 +24,10 @@ public class PollResponder : MonoBehaviour
         if ("poll" == evt.commandName)
         {
             currentPoll = new Poll {
-                interactionId = evt.id
+                interactionId = evt.id,
+                question = evt.GetOption("question").value
             };
+            Debug.Log(currentPoll.question);
         }
     }
 }
