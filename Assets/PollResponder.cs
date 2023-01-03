@@ -12,8 +12,8 @@ public class PollResponder : MonoBehaviour
     {
         public string interactionId;
         public string question;
-        public string[] answers;
-        public Dictionary<string, DiscordMember[]> votes;
+        public List<string> answers = new List<string>();
+        public Dictionary<string, DiscordMember[]> votes = new Dictionary<string, DiscordMember[]>();
     }
 
     public Poll currentPoll;
@@ -27,7 +27,15 @@ public class PollResponder : MonoBehaviour
                 interactionId = evt.id,
                 question = evt.GetOption("question").value
             };
-            Debug.Log(currentPoll.question);
+            //go through each of the answers
+            for (var i = 1; i <= 16; i++)
+            {
+                var answer = evt.GetOption("option_"+i);
+                if (answer != null)
+                {
+                    currentPoll.answers.Add(answer.value);
+                }
+            }
         }
     }
 }
