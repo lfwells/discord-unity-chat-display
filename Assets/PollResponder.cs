@@ -4,6 +4,7 @@ using UnityEngine;
 using DiscordUnityChatDisplay;
 
 //current limitations: only the most recent poll will appear, all votes for previous polls will be ignored
+//doesn't really handle all the different variations of poll modes
 
 public class PollResponder : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class PollResponder : MonoBehaviour
                 question = evt.GetOption("question").value
             };
             //go through each of the answers
+            //TODO: handle auto yes/no options
             for (var i = 1; i <= 16; i++)
             {
                 var answer = evt.GetOption("option_"+i);
@@ -36,6 +38,19 @@ public class PollResponder : MonoBehaviour
                     currentPoll.answers.Add(answer.value);
                 }
             }
+
+            //TODO: do something in unity for this (via subclass I guess, wait no, lets try composition! so use events i guess)
+        }
+        else //must have been a button press, or another command
+        {
+            //check there is an original interaction id (means it was a button/similar)
+            if (evt.originalInteractionId == null) return;
+
+            //check that the id of the original interaction matches our poll
+            if (evt.originalInteractionId != currentPoll?.interactionId) return;
+
+            //THEN we can update the poll results
+            Debug.Log("got a vote "+evt.member.id+" on "+evt.customId);
         }
     }
 }
