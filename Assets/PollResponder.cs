@@ -8,6 +8,11 @@ using DiscordUnityChatDisplay;
 
 public class PollResponder : MonoBehaviour
 {
+    const string POLL_COMMAND = "poll";
+    const string POLL_COMMAND_QUESTION = "question";
+    const string POLL_COMMAND_OPTION_PREFIX = "option_";
+    const string POLL_OPTION_PREFIX = "poll_option_";
+
     [System.Serializable]
     public class Poll
     {
@@ -22,16 +27,16 @@ public class PollResponder : MonoBehaviour
     public void OnInteractionCreate(DiscordUnityChatDisplay.InteractionCreateEvent evt)
     {
         //if incoming command
-        if ("poll" == evt.commandName)
+        if (POLL_COMMAND == evt.commandName)
         {
             currentPoll = new Poll {
                 interactionId = evt.id,
-                question = evt.GetOption("question").value
+                question = evt.GetOption(POLL_COMMAND_QUESTION).value
             };
             //go through each of the answers
             for (var i = 1; i <= 16; i++)
             {
-                var answer = evt.GetOption("option_"+i);
+                var answer = evt.GetOption(POLL_COMMAND_OPTION_PREFIX+i);
                 if (answer != null)
                 {
                     currentPoll.answers.Add(answer.value);
@@ -56,8 +61,17 @@ public class PollResponder : MonoBehaviour
             //check that the id of the original interaction matches our poll
             if (evt.originalInteractionId != currentPoll?.interactionId) return;
 
+            //check that it was a poll button option
+            if (evt.customId == null || evt.customId.StartsWith(POLL_OPTION_PREFIX) == false) return;
+
+            //get the option index (hopefully valid)
+            int answerIndex;
+            if (!int.TryParse(evt.customId.Replace(POLL_OPTION_PREFIX, ""), out answerIndex)) return;
+
             //THEN we can update the poll results
-            Debug.Log("got a vote "+evt.member.id+" on "+evt.customId);
+            Debug.Log("got a vote "+evt.member.id+" on "+answerIndex);
+            
+            //TODO: do something in unity for this (via subclass I guess, wait no, lets try composition! so use events i guess)
         }
     }
 }
