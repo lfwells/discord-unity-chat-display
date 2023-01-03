@@ -29,7 +29,6 @@ public class PollResponder : MonoBehaviour
                 question = evt.GetOption("question").value
             };
             //go through each of the answers
-            //TODO: handle auto yes/no options
             for (var i = 1; i <= 16; i++)
             {
                 var answer = evt.GetOption("option_"+i);
@@ -37,6 +36,11 @@ public class PollResponder : MonoBehaviour
                 {
                     currentPoll.answers.Add(answer.value);
                 }
+            }
+            if (currentPoll.answers.Count == 0)
+            {
+                currentPoll.answers.Add("Yes");
+                currentPoll.answers.Add("No");
             }
 
             //TODO: do something in unity for this (via subclass I guess, wait no, lets try composition! so use events i guess)
