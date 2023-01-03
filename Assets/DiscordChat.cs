@@ -136,6 +136,16 @@ namespace DiscordUnityChatDisplay
         public DiscordMember member; 
         public string originalInteractionId;
         public InteractionOption[] options;
+
+        public InteractionOption GetOption(string name)
+        {
+            if (options == null) return null;
+            for (var i = 0; i < options.Length; i++)
+            {
+                if (options[i].name == name) return options[i];
+            }
+            return null;
+        }
     }
 
     [System.Serializable]
