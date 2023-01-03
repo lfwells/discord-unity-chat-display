@@ -14,7 +14,7 @@ public class PollResponder : MonoBehaviour
         public string interactionId;
         public string question;
         public List<string> answers = new List<string>();
-        public Dictionary<string, DiscordMember[]> votes = new Dictionary<string, DiscordMember[]>();
+        public List<List<DiscordMember>> votes = new List<List<DiscordMember>>();
     }
 
     public Poll currentPoll;
@@ -35,12 +35,15 @@ public class PollResponder : MonoBehaviour
                 if (answer != null)
                 {
                     currentPoll.answers.Add(answer.value);
+                    currentPoll.votes.Add(new List<DiscordMember>());
                 }
             }
             if (currentPoll.answers.Count == 0)
             {
                 currentPoll.answers.Add("Yes");
+                currentPoll.votes.Add(new List<DiscordMember>());
                 currentPoll.answers.Add("No");
+                currentPoll.votes.Add(new List<DiscordMember>());
             }
 
             //TODO: do something in unity for this (via subclass I guess, wait no, lets try composition! so use events i guess)
