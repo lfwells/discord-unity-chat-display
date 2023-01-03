@@ -17,7 +17,7 @@ public class SampleResponder : MonoBehaviour
     public void OnInteractionCreate(InteractionCreateEvent evt)
     {
         var go = Instantiate(testBall, transform.position, transform.rotation, transform);
-        StartCoroutine(LoadImage(evt.member.avatar, go.GetComponentInChildren<RawImage>()));
+        if (gameObject.activeSelf) StartCoroutine(LoadImage(evt.member.avatar, go.GetComponentInChildren<RawImage>()));
     }
     IEnumerator LoadImage(string url, RawImage ontoImage)
     {
