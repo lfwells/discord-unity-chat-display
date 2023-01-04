@@ -27,10 +27,10 @@ public class PollVisuals : MonoBehaviour
     }
     public void OnVoteAdded(int answerIndex, DiscordMember member)
     {
-
+        buckets[answerIndex].AddVote(member);
     }
     public void OnVoteRemoved(int answerIndex, DiscordMember member)
     {
-
+        buckets[answerIndex].RemoveVote(member);
     }
 }
