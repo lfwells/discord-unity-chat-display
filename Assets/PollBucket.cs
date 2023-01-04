@@ -15,7 +15,9 @@ public class PollBucket : MonoBehaviour
     public void AddVote(DiscordMember member)
     {
         var go = GameObject.Instantiate(ballPrefab, spawnPoint.position, Quaternion.Euler(0,0,Random.value*360f), transform);
-        StartCoroutine(LoadImage(member.avatar, go.GetComponentInChildren<RawImage>()));
+        Color memberColor = Color.white;
+        ColorUtility.TryParseHtmlString(member.color, out memberColor);
+        StartCoroutine(LoadImage(member.avatar, go.GetComponentInChildren<RawImage>(), memberColor));
         spawnedBalls.Add(member.id, go);
     }
     public void RemoveVote(DiscordMember member)
@@ -23,7 +25,7 @@ public class PollBucket : MonoBehaviour
         Destroy(spawnedBalls[member.id]);
         spawnedBalls.Remove(member.id);
     }
-    IEnumerator LoadImage(string url, RawImage ontoImage)
+    IEnumerator LoadImage(string url, RawImage ontoImage, Color originalColor)
     {
         url = url.Replace(".webp", ".png");
         var www = UnityWebRequestTexture.GetTexture(url);
