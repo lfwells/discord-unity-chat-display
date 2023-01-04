@@ -4,13 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using DiscordUnityChatDisplay;
+using TMPro;
 
 public class PollBucket : MonoBehaviour
 {
     public GameObject ballPrefab;
     public Transform spawnPoint;
     public GameObject bottomPanel;
+    public TMP_Text answerLabel;
+
     Dictionary<string, GameObject> spawnedBalls = new Dictionary<string, GameObject>();
+
+    public void Init(string answer)
+    {
+        answerLabel.text = answer;
+    }
 
     public void AddVote(DiscordMember member)
     {

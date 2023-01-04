@@ -20,7 +20,9 @@ public class PollVisuals : MonoBehaviour
             var answer = poll.answers[i];
             var offset = new Vector3(i * BUCKET_WIDTH - hcentering, -vcentering, 0);
             var go = Instantiate(pollBucketPrefab, offset, Quaternion.identity, transform);
-            buckets.Add(go.GetComponent<PollBucket>());
+            var bucket = go.GetComponent<PollBucket>();
+            bucket.Init(answer);
+            buckets.Add(bucket);
         }
     }
     public void OnPollDeleted(PollResponder.Poll poll)
