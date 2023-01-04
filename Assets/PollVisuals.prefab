@@ -44,5 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 842676536fecfce45b11f3e58e24b526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pollBucketPrefab: {fileID: 6594193260691127826}
-  buckets: []
+  pollBucketPrefab: {fileID: 1173861548427499496, guid: 23660d6bbd6c0024c97f1e5dbc282e0e, type: 3}
