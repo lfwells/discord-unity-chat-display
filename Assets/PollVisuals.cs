@@ -2,19 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DiscordUnityChatDisplay;
+using TMPro;
 
 public class PollVisuals : MonoBehaviour
 {
+    public TMP_Text questionText;
+
     public GameObject pollBucketPrefab;
     const float BUCKET_WIDTH = 3f;
     const float BUCKET_HEIGHT = 10f - 1f;
 
     List<PollBucket> buckets = new List<PollBucket>();
 
+    void Start()
+    {
+        questionText.text = string.Empty;
+    }
+
     public void OnPollCreated(PollResponder.Poll poll)
     {
         var hcentering = poll.answers.Count / 2f * BUCKET_WIDTH / 2f;
         var vcentering = BUCKET_HEIGHT / 2f;
+
+        questionText.text = poll.question;
+        questionText.transform.position = new Vector3(0,BUCKET_HEIGHT-vcentering, 0);
+
         for (var i = 0; i < poll.answers.Count; i++)
         {
             var answer = poll.answers[i];
