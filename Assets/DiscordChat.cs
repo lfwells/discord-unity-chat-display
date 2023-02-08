@@ -10,6 +10,7 @@ namespace DiscordUnityChatDisplay
 
     public class DiscordChat : MonoBehaviour
     {
+        public string connection = "ws://131.217.172.176:3000/chat/{0}";
         public string channelID;
 
         public UnityEvent<ChannelUpdateEvent> onChannelUpdate;
@@ -20,13 +21,16 @@ namespace DiscordUnityChatDisplay
         public UnityEvent<ReactionRemoveEvent> onReactionRemove;
         public UnityEvent<InteractionCreateEvent> onInteractionCreate;
 
-        WebSocket ws;
+        private WebSocket ws;
+        private object l_frames = new object();
+        private Queue<string> _frames = new Queue<string>();
+        private int _framesLastProcessed = -1;
+
         private void Start()
         {
-            Debug.Log("???");
             Application.runInBackground = true;
 
-            ws = new WebSocket("ws://localhost:3000/chat/"+channelID);
+            ws = new WebSocket(string.Format(connection, channelID));
             ws.OnOpen += (sender,e) =>
             {
                 Debug.Log("Connected to "+((WebSocket)sender).Url);
@@ -35,15 +39,21 @@ namespace DiscordUnityChatDisplay
             {
                 Debug.LogError("Error " + e.Message+" "+e.Exception);
             };
+            ws.OnClose += (sender, e) =>
+            {
+                Debug.LogError($"Disconnected from websocket 0.o {e.Code} - {e.Reason} ");
+                ws = null;
+            };
             ws.OnMessage += OnThreadedMessage;
             ws.Connect();
         }
-        object l_frames = new object();
-        Queue<string> _frames = new Queue<string>();
-        int _framesLastProcessed = -1;
+
+        
         private void OnThreadedMessage(object sender, MessageEventArgs e)
         {
-            lock (l_frames) _frames.Enqueue(e.Data);
+            lock (l_frames) {
+                _frames.Enqueue(e.Data);
+            }
         }
         private void DequeueMessages()
         {
@@ -66,6 +76,7 @@ namespace DiscordUnityChatDisplay
 
         private void ProcessMessage(string message)
         {
+            Debug.Log(message);
             var json = JSON.Parse(message);
 
             string origin = json["origin"];
