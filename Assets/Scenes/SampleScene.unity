@@ -334,6 +334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23c84ea904a17a4b8e70fd01d67bed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initOnStart: 1
   connection: ws://131.217.172.176/chat/{0}
   channelID: 1072876296490733658
   onChannelUpdate:
@@ -400,6 +401,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4437180059621034106, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: -3128730361284329534, guid: 4bbc42ad10097ec4e91af18bc303d5d9, type: 2}
+    - target: {fileID: 5066434381299211384, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 4bbc42ad10097ec4e91af18bc303d5d9, type: 2}
+    - target: {fileID: 5066434381299211384, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -3128730361284329534, guid: 4bbc42ad10097ec4e91af18bc303d5d9, type: 2}
     - target: {fileID: 6594193260691127826, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
       propertyPath: m_Name
       value: PollVisuals

@@ -11,6 +11,7 @@ public class PollVisuals : MonoBehaviour
     public GameObject pollBucketPrefab;
     const float BUCKET_WIDTH = 3f;
     const float BUCKET_HEIGHT = 10f - 1f;
+    const float BUCKET_SPACING = 0.1f;
 
     List<PollBucket> buckets = new List<PollBucket>();
 
@@ -21,7 +22,7 @@ public class PollVisuals : MonoBehaviour
 
     public void OnPollCreated(PollResponder.Poll poll)
     {
-        var hcentering = poll.answers.Count / 2f * BUCKET_WIDTH / 2f;
+        var hcentering = (poll.answers.Count - 1 ) * (BUCKET_WIDTH + BUCKET_SPACING*2) / 2f;
         var vcentering = BUCKET_HEIGHT / 2f;
 
         questionText.text = poll.question;
@@ -30,7 +31,7 @@ public class PollVisuals : MonoBehaviour
         for (var i = 0; i < poll.answers.Count; i++)
         {
             var answer = poll.answers[i];
-            var offset = new Vector3(i * BUCKET_WIDTH - hcentering, -vcentering, 0);
+            var offset = new Vector3(i * BUCKET_WIDTH - hcentering + i * BUCKET_SPACING*2, -vcentering, 0);
             var go = Instantiate(pollBucketPrefab, offset, Quaternion.identity, transform);
             var bucket = go.GetComponent<PollBucket>();
             bucket.Init(answer);
