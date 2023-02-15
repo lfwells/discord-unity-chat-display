@@ -10,6 +10,8 @@ namespace DiscordUnityChatDisplay
 
     public class DiscordChat : MonoBehaviour
     {
+        public bool initOnStart = true;
+
         public string connection = "ws://131.217.172.176:3000/chat/{0}";
         public string channelID;
 
@@ -28,6 +30,10 @@ namespace DiscordUnityChatDisplay
 
         private void Start()
         {
+            Debug.Log("start "+channelID);
+        //}
+        //public void Init()
+        //{
             Application.runInBackground = true;
 
             ws = new WebSocket(string.Format(connection, channelID));
