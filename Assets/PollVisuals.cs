@@ -13,8 +13,11 @@ public class PollVisuals : MonoBehaviour
         RawCount,
         CountOutOf,
         Percentage,
+        CountOutOfHardCodedNumber,
+        PercentageOutOfHardCodedNumber
     }
     public CountType countType;
+    public int hardCodedTotalCount;
 
     public TMP_Text questionText;
 
@@ -95,6 +98,13 @@ public class PollVisuals : MonoBehaviour
                 });
             }
         }
+        else if (Input.GetKeyDown(KeyCode.Space)) 
+        {
+            //set countType to the next value in the CountType enum, wrapping around
+            countType = (CountType)((((int)countType)+1) % System.Enum.GetValues(typeof(CountType)).Length);
+
+            UpdateAllAnswerTexts();
+        }
     }
 
     public void OnPollCreated(PollResponder.Poll poll)
@@ -115,6 +125,7 @@ public class PollVisuals : MonoBehaviour
             bucket.Init(this, answer);
             buckets.Add(bucket);
         }
+        UpdateAllAnswerTexts();
     }
     public void OnPollDeleted(PollResponder.Poll poll)
     {
@@ -126,12 +137,17 @@ public class PollVisuals : MonoBehaviour
     {
         TotalVotes++;
         buckets[answerIndex].AddVote(member);
-        buckets.ForEach(b => b.UpdateVoteCountText());
+        UpdateAllAnswerTexts();
     }
     public void OnVoteRemoved(int answerIndex, DiscordMember member)
     {
         TotalVotes--; 
         buckets[answerIndex].RemoveVote(member);
+        UpdateAllAnswerTexts();
+    }
+
+    public void UpdateAllAnswerTexts()
+    {
         buckets.ForEach(b => b.UpdateVoteCountText());
     }
 }

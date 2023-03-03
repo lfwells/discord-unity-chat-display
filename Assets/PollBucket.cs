@@ -73,6 +73,12 @@ public class PollBucket : MonoBehaviour
             case PollVisuals.CountType.CountOutOf:
                 countText = count + "/" + poll.TotalVotes;
                 break;
+            case PollVisuals.CountType.CountOutOfHardCodedNumber:
+                countText = count + "/" + poll.hardCodedTotalCount;
+                break;
+            case PollVisuals.CountType.PercentageOutOfHardCodedNumber:
+                countText = (count / (float)poll.hardCodedTotalCount * 100f).ToString("0") + "%";
+                break;
         }
         if (poll.countType != PollVisuals.CountType.None)
         {
