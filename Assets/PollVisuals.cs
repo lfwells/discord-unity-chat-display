@@ -105,6 +105,10 @@ public class PollVisuals : MonoBehaviour
 
             UpdateAllAnswerTexts();
         }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            OnPollDeleted(null);
+        }
     }
 
     public void OnPollCreated(PollResponder.Poll poll)
@@ -132,6 +136,7 @@ public class PollVisuals : MonoBehaviour
         foreach (var bucket in buckets)
             Destroy(bucket.gameObject);
         buckets.Clear();
+        questionText.text = "";
     }
     public void OnVoteAdded(int answerIndex, DiscordMember member)
     {
