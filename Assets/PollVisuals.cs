@@ -3,9 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using DiscordUnityChatDisplay;
 using TMPro;
+using System.Linq;
 
 public class PollVisuals : MonoBehaviour
 {
+    public enum CountType
+    {
+        None,
+        RawCount,
+        CountOutOf,
+        Percentage,
+    }
+    public CountType countType;
+
     public TMP_Text questionText;
 
     public GameObject pollBucketPrefab;
@@ -17,7 +27,7 @@ public class PollVisuals : MonoBehaviour
     public int voteCountChunkSize = 5;
 
     int totalVotes = 0;
-    int TotalVotes
+    public int TotalVotes
     {
         get { return totalVotes; }
         set { 
@@ -76,7 +86,7 @@ public class PollVisuals : MonoBehaviour
                 //generate a random hex color
                 var color = "#" + ColorUtility.ToHtmlStringRGB(Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f));
 
-                OnVoteAdded(Random.Range(0, 1), new DiscordMember()
+                OnVoteAdded(Random.Range(0, 2), new DiscordMember()
                 {
                     avatar = "https://pbs.twimg.com/profile_images/1477596557495078912/QuiPSYnb_400x400.jpg",
                     color = color,
@@ -102,7 +112,7 @@ public class PollVisuals : MonoBehaviour
             var go = Instantiate(pollBucketPrefab, offset, Quaternion.identity, transform);
             go.transform.SetSiblingIndex(0);
             var bucket = go.GetComponent<PollBucket>();
-            bucket.Init(answer);
+            bucket.Init(this, answer);
             buckets.Add(bucket);
         }
     }
@@ -115,11 +125,13 @@ public class PollVisuals : MonoBehaviour
     public void OnVoteAdded(int answerIndex, DiscordMember member)
     {
         TotalVotes++;
-        buckets[answerIndex].AddVote(member, VoteBallScale);
+        buckets[answerIndex].AddVote(member);
+        buckets.ForEach(b => b.UpdateVoteCountText());
     }
     public void OnVoteRemoved(int answerIndex, DiscordMember member)
     {
         TotalVotes--; 
         buckets[answerIndex].RemoveVote(member);
+        buckets.ForEach(b => b.UpdateVoteCountText());
     }
 }

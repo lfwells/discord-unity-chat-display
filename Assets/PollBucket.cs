@@ -8,6 +8,9 @@ using TMPro;
 
 public class PollBucket : MonoBehaviour
 {
+    PollVisuals poll;
+    string answer;
+
     public GameObject ballPrefab;
     public Transform spawnPoint;
     public GameObject bottomPanel;
@@ -15,15 +18,18 @@ public class PollBucket : MonoBehaviour
 
     Dictionary<string, GameObject> spawnedBalls = new Dictionary<string, GameObject>();
 
-    public void Init(string answer)
+    public void Init(PollVisuals poll, string answer)
     {
+        this.poll = poll;
+        this.answer = answer;
+
         answerLabel.text = answer;
     }
 
-    public void AddVote(DiscordMember member, float size)
+    public void AddVote(DiscordMember member)
     {
         var go = GameObject.Instantiate(ballPrefab, spawnPoint.position + new Vector3(Random.Range(-0.2f, 0.2f), 0), Quaternion.Euler(0, 0, Random.value * 360f), transform);
-        go.transform.localScale = Vector3.one * size;
+        go.transform.localScale = Vector3.one * poll.VoteBallScale;
 
         ColorUtility.TryParseHtmlString(member.color, out Color memberColor);
         StartCoroutine(LoadImage(member.avatar, go.GetComponentInChildren<RawImage>(), memberColor));
@@ -50,6 +56,28 @@ public class PollBucket : MonoBehaviour
             ontoImage.texture = myTexture;
         }
 
+    }
+
+    public void UpdateVoteCountText()
+    {
+        var count = spawnedBalls.Count;
+        var countText = "";
+        switch (poll.countType)
+        {
+            case PollVisuals.CountType.RawCount:
+                countText = count.ToString();
+                break;
+            case PollVisuals.CountType.Percentage:
+                countText = (count / (float)poll.TotalVotes * 100f).ToString("0") + "%";
+                break;
+            case PollVisuals.CountType.CountOutOf:
+                countText = count + "/" + poll.TotalVotes;
+                break;
+        }
+        if (poll.countType != PollVisuals.CountType.None)
+        {
+            answerLabel.text = answer + " (" + countText + ")";
+        }
     }
 
     public void SetBallSize(float size)

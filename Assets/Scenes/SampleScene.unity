@@ -413,6 +413,30 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: -3128730361284329534, guid: 4bbc42ad10097ec4e91af18bc303d5d9, type: 2}
+    - target: {fileID: 5721464164954073800, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: countType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5721464164954073800, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: voteCountToScaleCurve.m_Curve.Array.data[1].value
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5721464164954073800, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: voteCountToScaleCurve.m_Curve.Array.data[0].inSlope
+      value: -0.008
+      objectReference: {fileID: 0}
+    - target: {fileID: 5721464164954073800, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: voteCountToScaleCurve.m_Curve.Array.data[1].inSlope
+      value: -0.008
+      objectReference: {fileID: 0}
+    - target: {fileID: 5721464164954073800, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: voteCountToScaleCurve.m_Curve.Array.data[0].outSlope
+      value: -0.008
+      objectReference: {fileID: 0}
+    - target: {fileID: 5721464164954073800, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
+      propertyPath: voteCountToScaleCurve.m_Curve.Array.data[1].outSlope
+      value: -0.008
+      objectReference: {fileID: 0}
     - target: {fileID: 6594193260691127826, guid: 50869f1ec38426f4799334dd2b4451eb, type: 3}
       propertyPath: m_Name
       value: PollVisuals
