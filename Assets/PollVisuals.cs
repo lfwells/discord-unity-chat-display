@@ -13,6 +13,39 @@ public class PollVisuals : MonoBehaviour
     const float BUCKET_HEIGHT = 10f - 1f;
     const float BUCKET_SPACING = 0.1f;
 
+    public AnimationCurve voteCountToScaleCurve;
+    public int voteCountChunkSize = 5;
+
+    int totalVotes = 0;
+    int TotalVotes
+    {
+        get { return totalVotes; }
+        set { 
+            totalVotes = value;
+            //apply a staircase effect to totalVotes value, rounding down every 5 votes
+            //this is so that the scale of the vote balls doesn't jump around too much
+            //for example if there are 10 votes, the totalVotes will be 10, but if there are 11 votes, totalVotes will be 10
+            var t = Mathf.FloorToInt((float)totalVotes / voteCountChunkSize) * voteCountChunkSize;
+
+            VoteBallScale = voteCountToScaleCurve.Evaluate(t);
+        }
+    }
+
+    float voteBallScale = 1f;
+    public float VoteBallScale
+    {
+        get { return voteBallScale; }  
+        set 
+        { 
+            voteBallScale = value; 
+            //update the scale of all balls in all buckets
+            foreach (var bucket in buckets)
+            {
+                bucket.SetBallSize(voteBallScale);
+            }
+        }  
+    }
+
     List<PollBucket> buckets = new List<PollBucket>();
 
     void Start()
@@ -45,7 +78,7 @@ public class PollVisuals : MonoBehaviour
 
                 OnVoteAdded(Random.Range(0, 1), new DiscordMember()
                 {
-                    avatar = "https://mylo.utas.edu.au/content/enforced/570649-AW_KCT_23S1_31948_0_0_1_0_1/Unit%20Overview/File_e4f8cc7f60e642c09012be4bcb9ada2c_image.png?_&d2lSessionVal=1t6D74BnavrUVgxvXADTztVT1&ou=570649",
+                    avatar = "https://pbs.twimg.com/profile_images/1477596557495078912/QuiPSYnb_400x400.jpg",
                     color = color,
                     name = "test",
                     id = Random.value.ToString()
@@ -67,6 +100,7 @@ public class PollVisuals : MonoBehaviour
             var answer = poll.answers[i];
             var offset = new Vector3(i * BUCKET_WIDTH - hcentering + i * BUCKET_SPACING*2, -vcentering, 0);
             var go = Instantiate(pollBucketPrefab, offset, Quaternion.identity, transform);
+            go.transform.SetSiblingIndex(0);
             var bucket = go.GetComponent<PollBucket>();
             bucket.Init(answer);
             buckets.Add(bucket);
@@ -80,10 +114,12 @@ public class PollVisuals : MonoBehaviour
     }
     public void OnVoteAdded(int answerIndex, DiscordMember member)
     {
-        buckets[answerIndex].AddVote(member);
+        TotalVotes++;
+        buckets[answerIndex].AddVote(member, VoteBallScale);
     }
     public void OnVoteRemoved(int answerIndex, DiscordMember member)
     {
+        TotalVotes--; 
         buckets[answerIndex].RemoveVote(member);
     }
 }
