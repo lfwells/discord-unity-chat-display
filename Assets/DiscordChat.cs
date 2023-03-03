@@ -12,7 +12,16 @@ namespace DiscordUnityChatDisplay
     {
         public bool initOnStart = true;
 
+        public bool useLocalConnection = false;
         public string connection = "ws://131.217.172.176:3000/chat/{0}";
+        string localConnection = "ws://localhost:3000/chat/{0}";
+        string Connection
+        {
+            get
+            {
+                return useLocalConnection ? localConnection : connection;
+            }
+        }
         public string channelID;
 
         public MessageEditEvent latestUpdateEvent;
@@ -38,7 +47,7 @@ namespace DiscordUnityChatDisplay
         //{
             Application.runInBackground = true;
 
-            ws = new WebSocket(string.Format(connection, channelID));
+            ws = new WebSocket(string.Format(Connection, channelID));
             ws.OnOpen += (sender,e) =>
             {
                 Debug.Log("Connected to "+((WebSocket)sender).Url);
