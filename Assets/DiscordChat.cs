@@ -15,6 +15,8 @@ namespace DiscordUnityChatDisplay
         public string connection = "ws://131.217.172.176:3000/chat/{0}";
         public string channelID;
 
+        public MessageEditEvent latestUpdateEvent;
+
         public UnityEvent<ChannelUpdateEvent> onChannelUpdate;
         public UnityEvent<MessageCreateEvent> onMessageCreate;
         public UnityEvent<MessageEditEvent> onMessageEdit;
@@ -142,11 +144,16 @@ namespace DiscordUnityChatDisplay
         public string name;
     }
     [System.Serializable] public class MessageCreateEvent {}
-    [System.Serializable] public class MessageEditEvent {}
+    [System.Serializable] public class MessageEditEvent
+    {
+        public string id;
+        public DiscordEmbed[] embeds;
+    }
     [System.Serializable] public class MessageDeleteEvent {}
     [System.Serializable] public class ReactionAddEvent {}
     [System.Serializable] public class ReactionRemoveEvent {}
-    [System.Serializable] public class InteractionCreateEvent {
+    [System.Serializable] public class InteractionCreateEvent 
+    {
         public string id;
         public string commandName;
         public string customId;
@@ -179,6 +186,19 @@ namespace DiscordUnityChatDisplay
     {
         public string name;
         public string type;
+        public string value;
+    }
+    [System.Serializable]
+    public class DiscordEmbed
+    {
+        public string title;
+        public string descripton;
+        public DiscordEmbedField[] fields;
+    }
+    [System.Serializable]
+    public class DiscordEmbedField
+    {
+        public string name;
         public string value;
     }
 }

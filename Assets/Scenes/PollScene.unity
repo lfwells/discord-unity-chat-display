@@ -335,8 +335,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initOnStart: 1
-  connection: ws://131.217.172.176/chat/{0}
-  channelID: 1072876296490733658
+  connection: ws://localhost:3000/chat/{0}
+  channelID: 813152606359650322
+  latestUpdateEvent:
+    id: 
+    embeds: []
   onChannelUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -357,7 +360,19 @@ MonoBehaviour:
       m_Calls: []
   onMessageEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1129137574}
+        m_TargetAssemblyTypeName: PollResponder, Assembly-CSharp
+        m_MethodName: OnMessageEditEvent
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onMessageDelete:
     m_PersistentCalls:
       m_Calls: []

@@ -137,6 +137,7 @@ public class PollVisuals : MonoBehaviour
             Destroy(bucket.gameObject);
         buckets.Clear();
         questionText.text = "";
+        TotalVotes = 0;
     }
     public void OnVoteAdded(int answerIndex, DiscordMember member)
     {

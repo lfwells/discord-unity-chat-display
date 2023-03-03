@@ -27,6 +27,8 @@ public class PollResponder : MonoBehaviour
         public string question;
         public List<string> answers = new List<string>();
         public List<List<DiscordMember>> votes = new List<List<DiscordMember>>();
+
+        public bool IsScheduledPoll { get; set; }
     }
 
     public Poll currentPoll;
@@ -40,7 +42,8 @@ public class PollResponder : MonoBehaviour
 
             currentPoll = new Poll {
                 interactionId = evt.id,
-                question = evt.GetOption(POLL_COMMAND_QUESTION).value
+                question = evt.GetOption(POLL_COMMAND_QUESTION).value,
+                IsScheduledPoll = false,
             };
             //go through each of the answers
             for (var i = 1; i <= 16; i++)
@@ -64,11 +67,14 @@ public class PollResponder : MonoBehaviour
         }
         else //must have been a button press, or another command
         {
-            //check there is an original interaction id (means it was a button/similar)
-            if (evt.originalInteractionId == null) return;
+            if (!currentPoll.IsScheduledPoll)
+            {
+                //check there is an original interaction id (means it was a button/similar)
+                if (evt.originalInteractionId == null) return;
 
-            //check that the id of the original interaction matches our poll
-            if (evt.originalInteractionId != currentPoll?.interactionId) return;
+                //check that the id of the original interaction matches our poll
+                if (evt.originalInteractionId != currentPoll?.interactionId) return;
+            }
 
             //check that it was a poll button option
             if (evt.customId == null || evt.customId.StartsWith(POLL_OPTION_PREFIX) == false) return;
@@ -91,6 +97,40 @@ public class PollResponder : MonoBehaviour
                 onVoteAdded.Invoke(answerIndex, evt.member);
             }
             Debug.Log("vote count for this one: "+currentPoll.votes[answerIndex].Count);
+        }
+    }
+
+    //to support scheduled polls, we listen to onmessageeditevent
+    public void OnMessageEditEvent(DiscordUnityChatDisplay.MessageEditEvent evt)
+    {
+        //ignore edit events if the id is the same as our current poll
+        if (currentPoll?.interactionId == evt.id) return;
+
+        //we can't determine exactly if an embed is a poll, but we can do our best by checking fields
+        if (evt.embeds.Length == 1 && evt.embeds[0].fields.Length > 0)
+        {
+            onPollDeleted.Invoke(currentPoll);
+
+            var embed = evt.embeds[0];
+            currentPoll = new Poll
+            {
+                interactionId = evt.id,
+                question = embed.title,
+                IsScheduledPoll = true,
+            };
+
+            //go through each of the answers
+            for (var i = 0; i < embed.fields.Length; i++)
+            {
+                var answer = embed.fields[i];
+                if (answer != null)
+                {
+                    currentPoll.answers.Add(answer.name);
+                    currentPoll.votes.Add(new List<DiscordMember>());
+                }
+            }
+
+            onPollCreated.Invoke(currentPoll);
         }
     }
 }
