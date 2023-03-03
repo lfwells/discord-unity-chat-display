@@ -22,7 +22,7 @@ public class PollBucket : MonoBehaviour
 
     public void AddVote(DiscordMember member)
     {
-        var go = GameObject.Instantiate(ballPrefab, spawnPoint.position, Quaternion.Euler(0,0,Random.value*360f), transform);
+        var go = GameObject.Instantiate(ballPrefab, spawnPoint.position + new Vector3(Random.Range(-0.2f, 0.2f), 0), Quaternion.Euler(0,0,Random.value*360f), transform);
         Color memberColor = Color.white;
         ColorUtility.TryParseHtmlString(member.color, out memberColor);
         StartCoroutine(LoadImage(member.avatar, go.GetComponentInChildren<RawImage>(), memberColor));

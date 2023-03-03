@@ -19,6 +19,40 @@ public class PollVisuals : MonoBehaviour
     {
         questionText.text = string.Empty;
     }
+    //add a  vote when pressing space
+    private void Update()
+    {
+        //check if shift is held
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+
+                //just doing a fake poll for now
+                OnPollCreated(new PollResponder.Poll()
+                {
+                    question = "test",
+                    answers = new List<string>()
+                    {
+                        "yes", "no"
+                    }
+                });
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                //generate a random hex color
+                var color = "#" + ColorUtility.ToHtmlStringRGB(Color.HSVToRGB(Random.Range(0f, 1f), 1f, 1f));
+
+                OnVoteAdded(Random.Range(0, 1), new DiscordMember()
+                {
+                    avatar = "https://mylo.utas.edu.au/content/enforced/570649-AW_KCT_23S1_31948_0_0_1_0_1/Unit%20Overview/File_e4f8cc7f60e642c09012be4bcb9ada2c_image.png?_&d2lSessionVal=1t6D74BnavrUVgxvXADTztVT1&ou=570649",
+                    color = color,
+                    name = "test",
+                    id = Random.value.ToString()
+                });
+            }
+        }
+    }
 
     public void OnPollCreated(PollResponder.Poll poll)
     {
