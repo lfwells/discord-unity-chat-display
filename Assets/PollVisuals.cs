@@ -4,6 +4,7 @@ using UnityEngine;
 using DiscordUnityChatDisplay;
 using TMPro;
 using System.Linq;
+using static PollResponder;
 
 public class PollVisuals : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class PollVisuals : MonoBehaviour
     public TMP_Text questionText;
 
     public GameObject pollBucketPrefab;
-    const float BUCKET_WIDTH = 3f;
+    public float BUCKET_WIDTH = 3f;
     const float BUCKET_HEIGHT = 10f - 1f;
     const float BUCKET_SPACING = 0.1f;
 
@@ -109,6 +110,12 @@ public class PollVisuals : MonoBehaviour
         {
             OnPollDeleted(null);
         }
+        else if (Input.mouseScrollDelta.y != 0)
+        {
+            BUCKET_WIDTH += Input.mouseScrollDelta.y;
+            buckets.ForEach(b => b.Width = BUCKET_WIDTH);
+            RepositionBuckets();
+        }
     }
 
     public void OnPollCreated(PollResponder.Poll poll)
@@ -129,6 +136,7 @@ public class PollVisuals : MonoBehaviour
             bucket.Init(this, answer);
             buckets.Add(bucket);
         }
+        RepositionBuckets();
         UpdateAllAnswerTexts();
     }
     public void OnPollDeleted(PollResponder.Poll poll)
@@ -152,6 +160,16 @@ public class PollVisuals : MonoBehaviour
         UpdateAllAnswerTexts();
     }
 
+    void RepositionBuckets()
+    {
+        var hcentering = (buckets.Count - 1) * (BUCKET_WIDTH + BUCKET_SPACING * 2) / 2f;
+        for (var i = 0; i < buckets.Count; i++)
+        {
+            var bucket = buckets[i];
+            var offset = new Vector3(i * BUCKET_WIDTH - hcentering + i * BUCKET_SPACING * 2, bucket.transform.position.y, 0);
+            bucket.transform.position = offset;
+        }
+    }
     public void UpdateAllAnswerTexts()
     {
         buckets.ForEach(b => b.UpdateVoteCountText());

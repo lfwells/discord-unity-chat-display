@@ -14,9 +14,38 @@ public class PollBucket : MonoBehaviour
     public GameObject ballPrefab;
     public Transform spawnPoint;
     public GameObject bottomPanel;
+    public Transform leftPanel, rightPanel;
     public TMP_Text answerLabel;
 
     Dictionary<string, GameObject> spawnedBalls = new Dictionary<string, GameObject>();
+
+    float width = 3;
+    public float Width
+    {
+        get {  return width; }
+        set
+        {
+            width = value;
+
+            //scale the bottomPanel
+            bottomPanel.transform.localScale = new Vector3(width, 1, 1);
+
+            //position the leftPanel
+            var tmp1 = leftPanel.transform.localPosition;
+            tmp1.x = -width * 0.5f + leftPanel.transform.localScale.x * 0.5f;
+            leftPanel.transform.localPosition = tmp1;
+
+            //now do the same thing for the rightPanel
+            var tmp2 = rightPanel.transform.localPosition;
+            tmp2.x = width * 0.5f - rightPanel.transform.localScale.x * 0.5f;
+            rightPanel.transform.localPosition = tmp2;
+
+            //also change the width of the answer label
+            var tmp = answerLabel.rectTransform.sizeDelta;
+            tmp.x = width / (1f / answerLabel.transform.localScale.x) * 20f *3f * 0.5f;
+            answerLabel.rectTransform.sizeDelta = tmp;
+        }
+    }
 
     public void Init(PollVisuals poll, string answer)
     {
@@ -24,6 +53,8 @@ public class PollBucket : MonoBehaviour
         this.answer = answer;
 
         answerLabel.text = answer;
+
+        Width = poll.BUCKET_WIDTH;
     }
 
     public void AddVote(DiscordMember member)

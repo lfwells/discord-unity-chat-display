@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 1173861547354506958}
   - component: {fileID: 1173861547354506959}
   m_Layer: 0
-  m_Name: Square
+  m_Name: BottomSquare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -588,4 +588,6 @@ MonoBehaviour:
   ballPrefab: {fileID: 113605609788563554, guid: 2570276929de9c740a6420f13a62a098, type: 3}
   spawnPoint: {fileID: 1173861548274815100}
   bottomPanel: {fileID: 1173861547354506956}
+  leftPanel: {fileID: 1173861547397535989}
+  rightPanel: {fileID: 1173861548370965674}
   answerLabel: {fileID: 4624262207833685229}

@@ -335,7 +335,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initOnStart: 1
-  connection: ws://localhost:3000/chat/{0}
+  useLocalConnection: 0
+  connection: ws://131.217.172.176/chat/{0}
   channelID: 813152606359650322
   latestUpdateEvent:
     id: 
