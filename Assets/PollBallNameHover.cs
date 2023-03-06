@@ -25,6 +25,15 @@ public class PollBallNameHover : MonoBehaviour
         set
         {
             _name = value;
+            //use regex to online include alphanumeric characters and spaces
+            _name = System.Text.RegularExpressions.Regex.Replace(_name, @"[^A-Za-z0-9 ]", "");
+        
+            //only include text up to but not including the first bracket
+            var bracketIndex = _name.IndexOf('(');
+            if (bracketIndex > 0)
+                _name = _name.Substring(0, bracketIndex);
+
+
             nameText.text = value;
         }
     }

@@ -33,4 +33,12 @@ public class ConnectToChannel : MonoBehaviour
         Destroy(transform.root.gameObject);
 
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
 }
