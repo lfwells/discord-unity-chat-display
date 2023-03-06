@@ -30,12 +30,15 @@ public class PollBallNameHover : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
-        Visible = false;
-
         //detach the text box so it doesn't move with us
         nameText.transform.SetParent(null);
+
+        //show the text for the first 2 seconds
+        Visible = true;
+        yield return new WaitForSeconds(2);
+        Visible = false;
     }
 
     //hide and show the text box on mouse hover using the built-in mouse callbacks for unity
