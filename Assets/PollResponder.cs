@@ -4,6 +4,7 @@ using UnityEngine;
 using DiscordUnityChatDisplay;
 using System.Linq;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 
 //current limitations: only the most recent poll will appear, all votes for previous polls will be ignored
 //doesn't really handle all the different variations of poll modes
@@ -14,11 +15,13 @@ public class PollResponder : MonoBehaviour
     const string POLL_COMMAND_QUESTION = "question";
     const string POLL_COMMAND_OPTION_PREFIX = "option_";
     const string POLL_OPTION_PREFIX = "poll_option_";
+    const string POLL_RESET_COMMAND = "poll_reset_button";
 
     public UnityEvent<Poll> onPollCreated;
     public UnityEvent<Poll> onPollDeleted;
     public UnityEvent<int, DiscordMember> onVoteAdded;
     public UnityEvent<int, DiscordMember> onVoteRemoved;
+    public UnityEvent<Poll> onPollReset;
 
     [System.Serializable]
     public class Poll
@@ -77,26 +80,39 @@ public class PollResponder : MonoBehaviour
             }
 
             //check that it was a poll button option
-            if (evt.customId == null || evt.customId.StartsWith(POLL_OPTION_PREFIX) == false) return;
+            if (evt.customId == null) return;
 
-            //get the option index (hopefully valid)
-            int answerIndex;
-            if (!int.TryParse(evt.customId.Replace(POLL_OPTION_PREFIX, ""), out answerIndex)) return;
-            if (answerIndex < 0 || answerIndex >= currentPoll.votes.Count) return;
-
-            //THEN we can update the poll results
-            Debug.Log("got a vote action "+evt.member.id+" on "+answerIndex);
-            if (currentPoll.votes[answerIndex].RemoveAll(m => m.id == evt.member.id) > 0)
+            if (evt.customId.StartsWith(POLL_OPTION_PREFIX))
             {
-                Debug.Log("already voted, must be unvote");
-                onVoteRemoved.Invoke(answerIndex, evt.member);
+                //get the option index (hopefully valid)
+                int answerIndex;
+                if (!int.TryParse(evt.customId.Replace(POLL_OPTION_PREFIX, ""), out answerIndex)) return;
+                if (answerIndex < 0 || answerIndex >= currentPoll.votes.Count) return;
+
+                //THEN we can update the poll results
+                Debug.Log("got a vote action " + evt.member.id + " on " + answerIndex);
+                if (currentPoll.votes[answerIndex].RemoveAll(m => m.id == evt.member.id) > 0)
+                {
+                    Debug.Log("already voted, must be unvote");
+                    onVoteRemoved.Invoke(answerIndex, evt.member);
+                }
+                else
+                {
+                    currentPoll.votes[answerIndex].Add(evt.member);
+                    onVoteAdded.Invoke(answerIndex, evt.member);
+                }
+                Debug.Log("vote count for this one: " + currentPoll.votes[answerIndex].Count);
+            }
+            else if (evt.customId.Equals(POLL_RESET_COMMAND))
+            {
+                Debug.Log("got a poll reset");
+                onPollReset.Invoke(currentPoll);
             }
             else
             {
-                currentPoll.votes[answerIndex].Add(evt.member);
-                onVoteAdded.Invoke(answerIndex, evt.member);
+                Debug.Log("got a custom id but not a poll button or reset: " + evt.customId);
+                return;
             }
-            Debug.Log("vote count for this one: "+currentPoll.votes[answerIndex].Count);
         }
     }
 
