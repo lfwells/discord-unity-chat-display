@@ -33,8 +33,15 @@ public class PollBallNameHover : MonoBehaviour
     void Start()
     {
         Visible = false;
-        Name = "";
     }
 
-
+    //hide and show the text box on mouse hover using the built-in mouse callbacks for unity
+    private void OnMouseEnter()
+    {
+        Visible = true;
+    }
+    private void OnMouseExit() 
+    {
+        Visible = false;
+    }
 }
