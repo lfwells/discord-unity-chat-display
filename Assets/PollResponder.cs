@@ -23,6 +23,8 @@ public class PollResponder : MonoBehaviour
     public UnityEvent<int, DiscordMember> onVoteRemoved;
     public UnityEvent<Poll> onPollReset;
 
+    public bool allowScheduledPolls = false;
+
     [System.Serializable]
     public class Poll
     {
@@ -38,6 +40,14 @@ public class PollResponder : MonoBehaviour
     }
 
     public Poll currentPoll;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            allowScheduledPolls = !allowScheduledPolls;
+        }
+    }
 
     public void OnInteractionCreate(DiscordUnityChatDisplay.InteractionCreateEvent evt)
     {
@@ -71,7 +81,9 @@ public class PollResponder : MonoBehaviour
 
             currentPoll.multi_vote = (evt.GetOption("multi_vote")?.value ?? "true") == "true";
             currentPoll.allow_undo = (evt.GetOption("allow_undo")?.value ?? "true") == "true";
+
             Debug.Log("multi vote was " + currentPoll.multi_vote);
+            Debug.Log("multi vote raw was " + evt.GetOption("multi_vote"));
 
             onPollCreated.Invoke(currentPoll);
         }
@@ -107,6 +119,23 @@ public class PollResponder : MonoBehaviour
                 {
                     currentPoll.votes[answerIndex].Add(evt.member);
                     onVoteAdded.Invoke(answerIndex, evt.member);
+
+                    //if its not multi vote
+                    if (!currentPoll.multi_vote)
+                    {
+                        Debug.Log("in non-multi-vote mode, so going through existing votes for this poll");
+                        //remove all other votes
+                        for (var i = 0; i < currentPoll.votes.Count; i++)
+                        {
+                            if (i == answerIndex) continue;
+                            if (currentPoll.votes[i].RemoveAll(m => m.id == evt.member.id) > 0)
+                            {
+
+                                Debug.Log("found a previous vote for answer index "+i+", removing that");
+                                onVoteRemoved.Invoke(i, evt.member);
+                            }
+                        }
+                    }
                 }
                 Debug.Log("vote count for this one: " + currentPoll.votes[answerIndex].Count);
             }
@@ -127,6 +156,8 @@ public class PollResponder : MonoBehaviour
     //to support scheduled polls, we listen to onmessageeditevent
     public void OnMessageEditEvent(DiscordUnityChatDisplay.MessageEditEvent evt)
     {
+        if (allowScheduledPolls == false) return;
+
         //ignore edit events if the id is the same as our current poll
         if (currentPoll?.interactionId == evt.id) return;
 
