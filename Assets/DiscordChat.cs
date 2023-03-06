@@ -93,7 +93,7 @@ namespace DiscordUnityChatDisplay
 
         private void ProcessMessage(string message)
         {
-            Debug.Log(message);
+            if (message.Contains("ping") == false) Debug.Log(message);
             var json = JSON.Parse(message);
 
             string origin = json["origin"];

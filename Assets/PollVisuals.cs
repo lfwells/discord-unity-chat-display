@@ -51,13 +51,24 @@ public class PollVisuals : MonoBehaviour
         get { return voteBallScale; }  
         set 
         { 
-            voteBallScale = value; 
+            voteBallScale = value * Mathf.Max(3f, BUCKET_WIDTH) / 3f; 
             //update the scale of all balls in all buckets
             foreach (var bucket in buckets)
             {
                 bucket.SetBallSize(voteBallScale);
             }
         }  
+    }
+
+    bool showTitle = true;
+    public bool ShowTitle
+    {
+        get { return showTitle; }  
+        set
+        {
+            showTitle = value;
+            questionText.gameObject.SetActive(showTitle);
+        }
     }
 
     List<PollBucket> buckets = new List<PollBucket>();
@@ -110,10 +121,16 @@ public class PollVisuals : MonoBehaviour
         {
             OnPollDeleted(null);
         }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            ShowTitle = !ShowTitle;
+        }
         else if (Input.mouseScrollDelta.y != 0)
         {
             BUCKET_WIDTH += Input.mouseScrollDelta.y;
+            BUCKET_WIDTH = Mathf.Clamp(BUCKET_WIDTH, 0.1f, 10f);
             buckets.ForEach(b => b.Width = BUCKET_WIDTH);
+            VoteBallScale = VoteBallScale;
             RepositionBuckets();
         }
     }
@@ -157,6 +174,12 @@ public class PollVisuals : MonoBehaviour
     {
         TotalVotes--; 
         buckets[answerIndex].RemoveVote(member);
+        UpdateAllAnswerTexts();
+    }
+    public void OnPollReset(PollResponder.Poll poll)
+    {
+        TotalVotes = 0;
+        buckets.ForEach(b => b.ResetVotes());
         UpdateAllAnswerTexts();
     }
 
