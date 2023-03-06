@@ -93,7 +93,7 @@ public class PollResponder : MonoBehaviour
                 Debug.Log("got a vote action " + evt.member.id + " on " + answerIndex);
                 if (currentPoll.votes[answerIndex].RemoveAll(m => m.id == evt.member.id) > 0)
                 {
-                    Debug.Log("already voted, must be unvote");
+                    Debug.Log("already voted for this answer, must be unvote");
                     onVoteRemoved.Invoke(answerIndex, evt.member);
                 }
                 else
@@ -106,6 +106,7 @@ public class PollResponder : MonoBehaviour
             else if (evt.customId.Equals(POLL_RESET_COMMAND))
             {
                 Debug.Log("got a poll reset");
+                currentPoll.votes.ForEach(l => l.Clear());
                 onPollReset.Invoke(currentPoll);
             }
             else

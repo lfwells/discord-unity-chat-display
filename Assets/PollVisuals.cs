@@ -159,6 +159,12 @@ public class PollVisuals : MonoBehaviour
         buckets[answerIndex].RemoveVote(member);
         UpdateAllAnswerTexts();
     }
+    public void OnPollReset(PollResponder.Poll poll)
+    {
+        TotalVotes = 0;
+        buckets.ForEach(b => b.ResetVotes());
+        UpdateAllAnswerTexts();
+    }
 
     void RepositionBuckets()
     {

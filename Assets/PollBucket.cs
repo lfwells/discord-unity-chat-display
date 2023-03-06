@@ -71,6 +71,15 @@ public class PollBucket : MonoBehaviour
         Destroy(spawnedBalls[member.id]);
         spawnedBalls.Remove(member.id);
     }
+    public void ResetVotes()
+    {
+        foreach (var ball in spawnedBalls.Values)
+        {
+            Destroy(ball);
+        }
+        spawnedBalls.Clear();
+    }
+
     IEnumerator LoadImage(string url, RawImage ontoImage, Color originalColor)
     {
         url = url.Replace(".webp", ".png");
