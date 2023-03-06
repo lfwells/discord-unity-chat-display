@@ -4,6 +4,7 @@ using UnityEngine;
 using WebSocketSharp;
 using SimpleJSON;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace DiscordUnityChatDisplay
 {
@@ -83,6 +84,11 @@ namespace DiscordUnityChatDisplay
         
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
+            }
+
             if(ws == null)
             {
                 return;

@@ -62,6 +62,9 @@ public class PollBucket : MonoBehaviour
         var go = GameObject.Instantiate(ballPrefab, spawnPoint.position + new Vector3(Random.Range(-0.2f, 0.2f), 0), Quaternion.Euler(0, 0, Random.value * 360f), transform);
         go.transform.localScale = Vector3.one * poll.VoteBallScale;
 
+        var nameScript = go.GetComponent<PollBallNameHover>();
+        nameScript.Name = member.name;
+        
         ColorUtility.TryParseHtmlString(member.color, out Color memberColor);
         StartCoroutine(LoadImage(member.avatar, go.GetComponentInChildren<RawImage>(), memberColor));
         spawnedBalls.Add(member.id, go);

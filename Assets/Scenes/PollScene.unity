@@ -755,7 +755,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 543, y: 230}
+  m_AnchoredPosition: {x: 772, y: 442}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &887658473
@@ -1024,10 +1024,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  allowScheduledPolls: 0
   currentPoll:
     interactionId: 
     question: 
     answers: []
+    multi_vote: 1
+    allow_undo: 1
 --- !u!4 &1129137575
 Transform:
   m_ObjectHideFlags: 0
