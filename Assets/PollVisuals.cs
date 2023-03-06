@@ -60,6 +60,17 @@ public class PollVisuals : MonoBehaviour
         }  
     }
 
+    bool showTitle = true;
+    public bool ShowTitle
+    {
+        get { return showTitle; }  
+        set
+        {
+            showTitle = value;
+            questionText.gameObject.SetActive(showTitle);
+        }
+    }
+
     List<PollBucket> buckets = new List<PollBucket>();
 
     void Start()
@@ -109,6 +120,10 @@ public class PollVisuals : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.C))
         {
             OnPollDeleted(null);
+        }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            ShowTitle = !ShowTitle;
         }
         else if (Input.mouseScrollDelta.y != 0)
         {
