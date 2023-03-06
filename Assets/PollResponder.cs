@@ -31,6 +31,9 @@ public class PollResponder : MonoBehaviour
         public List<string> answers = new List<string>();
         public List<List<DiscordMember>> votes = new List<List<DiscordMember>>();
 
+        public bool multi_vote = true;
+        public bool allow_undo = true;
+
         public bool IsScheduledPoll { get; set; }
     }
 
@@ -65,6 +68,10 @@ public class PollResponder : MonoBehaviour
                 currentPoll.answers.Add("No");
                 currentPoll.votes.Add(new List<DiscordMember>());
             }
+
+            currentPoll.multi_vote = (evt.GetOption("multi_vote")?.value ?? "true") == "true";
+            currentPoll.allow_undo = (evt.GetOption("allow_undo")?.value ?? "true") == "true";
+            Debug.Log("multi vote was " + currentPoll.multi_vote);
 
             onPollCreated.Invoke(currentPoll);
         }
