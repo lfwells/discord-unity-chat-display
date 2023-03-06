@@ -33,6 +33,9 @@ public class PollBallNameHover : MonoBehaviour
     void Start()
     {
         Visible = false;
+
+        //detach the text box so it doesn't move with us
+        nameText.transform.SetParent(null);
     }
 
     //hide and show the text box on mouse hover using the built-in mouse callbacks for unity
@@ -43,5 +46,15 @@ public class PollBallNameHover : MonoBehaviour
     private void OnMouseExit() 
     {
         Visible = false;
+    }
+
+    //ensure the text always follows the ball position and doesn't rotate
+    private void LateUpdate()
+    {
+        if (_visible)
+        {
+            nameText.transform.position = transform.position + new Vector3(0, 0.5f, -2);
+            nameText.transform.rotation = Quaternion.identity;
+        }
     }
 }
