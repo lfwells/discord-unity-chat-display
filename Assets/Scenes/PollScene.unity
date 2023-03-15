@@ -336,7 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initOnStart: 1
   useLocalConnection: 0
-  connection: wss://utasbot.dev/chat/{0}
+  connection: wss://utasbot.dev:443/chat/{0}
   channelID: 813152606359650322
   latestUpdateEvent:
     id: 
