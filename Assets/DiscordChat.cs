@@ -8,6 +8,12 @@ using UnityEngine.SceneManagement;
 
 namespace DiscordUnityChatDisplay
 {
+    enum SslProtocolsHack
+    {
+        Tls = 192,
+        Tls11 = 768,
+        Tls12 = 3072
+    }
 
     public class DiscordChat : MonoBehaviour
     {
@@ -57,10 +63,26 @@ namespace DiscordUnityChatDisplay
             {
                 Debug.LogError("Error " + e.Message+" "+e.Exception);
             };
+            /*
             ws.OnClose += (sender, e) =>
             {
                 Debug.LogError($"Disconnected from websocket 0.o {e.Code} - {e.Reason} ");
                 ws = null;
+            };*/
+            ws.OnClose += (sender, e) =>
+            {
+                var sslProtocolHack = (System.Security.Authentication.SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
+                //TlsHandshakeFailure
+                if (e.Code == 1015 && ws.SslConfiguration.EnabledSslProtocols != sslProtocolHack)
+                {
+                    ws.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
+                    ws.Connect();
+                }
+                else
+                {
+                    Debug.LogError($"Disconnected from websocket 0.o {e.Code} - {e.Reason} ");
+                    ws = null;
+                }
             };
             ws.OnMessage += OnThreadedMessage;
             ws.Connect();
